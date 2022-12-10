@@ -1,0 +1,8 @@
+yes	./transports/tcp/
+yes	./transports/serial-port/
+yes	./
+yes	./services/dcs-proxy/socket-io/
+yes	./services/couch-dcs/
+yes	./drivers/omron/fins/
+no	./drivers/rpi/
+no	./drivers/siemens/s7/

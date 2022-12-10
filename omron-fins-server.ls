@@ -1,6 +1,6 @@
 require! 'dcs': {Actor, DcsTcpClient, sleep}
 require! 'dcs/drivers/omron/fins': {OmronFinsDriver}
-require! '../config': {dcs-port}
+require! './config': {dcs-port}
 require! 'dcs/lib': {ensure-array, make-tests}
 
 
