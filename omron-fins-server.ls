@@ -102,8 +102,10 @@ class OmronFinsActor extends Actor
                 [_addr, value] = msg.data
                 addr = parse-omron-addr(_addr).formatted
                 res = await @driver.exec 'write', addr, value
+                @watch[addr].cache_updated = yes   # update the cache immediately
                 @send-response msg, {err: null, res}
             catch 
+                @watch[addr].last_error = e
                 @log.error "Error in write:", e 
                 @send-response msg, {err: e} 
 
@@ -141,11 +143,12 @@ class OmronFinsActor extends Actor
                     res = await @driver.exec 'read', addr, 1
                     value = res.values.0
                     v.last_read = Date.now!
-                    if (value isnt v.value) or v.last_error?
+                    if (value isnt v.value) or v.last_error? or v.cache_updated
                         #@log.log "Value changed for #{addr}: #{v.value} -> #{value}"
-                        v.value = value 
+                        v.value = value
                         @send v.route, {v.value, v.last_read}
                     v.last_error = null
+                    v.cache_updated = false
                 catch 
                     @log.error "Something went wrong while reading #{addr}:", e 
                     unless v.last_error 
@@ -157,4 +160,5 @@ class OmronFinsActor extends Actor
 
 new OmronFinsActor {name: \my1, host: '192.168.250.9'}
 
-new DcsTcpClient port: dcs-port .login {user: "monitor", password: "test"}
+#new DcsTcpClient port: dcs-port .login {user: "monitor", password: "test"}
+new DcsTcpClient port: 4044 .login {user: "monitor", password: "test"}
