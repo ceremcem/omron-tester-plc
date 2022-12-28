@@ -160,5 +160,4 @@ class OmronFinsActor extends Actor
 
 new OmronFinsActor {name: \my1, host: '192.168.250.9'}
 
-#new DcsTcpClient port: dcs-port .login {user: "monitor", password: "test"}
-new DcsTcpClient port: 4044 .login {user: "monitor", password: "test"}
+new DcsTcpClient port: dcs-port .login {user: "monitor", password: "test"}
