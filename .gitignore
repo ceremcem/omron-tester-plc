@@ -1,0 +1,6 @@
+node_modules
+virtual-env-path.sh
+scadajs-venv
+password*
+!*example*
+db_cache/*.json

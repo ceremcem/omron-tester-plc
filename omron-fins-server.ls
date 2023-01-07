@@ -146,13 +146,13 @@ class OmronFinsActor extends Actor
                     if (value isnt v.value) or v.last_error? or v.cache_updated
                         #@log.log "Value changed for #{addr}: #{v.value} -> #{value}"
                         v.value = value
-                        @send v.route, {v.value, v.last_read}
+                        @send {to: v.route}, {v.value, v.last_read}
                     v.last_error = null
                     v.cache_updated = false
                 catch 
                     @log.error "Something went wrong while reading #{addr}:", e 
                     unless v.last_error 
-                        @send v.route, {err: e}
+                        @send {to: v.route}, {err: e}
                     v.last_error = e 
                     v.last_read = null
 
@@ -161,3 +161,17 @@ class OmronFinsActor extends Actor
 new OmronFinsActor {name: \my1, host: '192.168.250.9'}
 
 new DcsTcpClient port: dcs-port .login {user: "monitor", password: "test"}
+
+
+require! 'dcs/services/dcs-proxy': {AuthDB, DcsTcpServer}
+require! 'dcs/src/auth-helpers': {hash-passwd}
+
+# Create auth db
+db = new AuthDB do 
+    'io_logger':
+        passwd-hash: hash-passwd "8rGrxAdhURP1bAbtyfG9ptGDharKxMg8"
+        routes:
+            "my1.**"
+
+# Create a TCP DCS Service
+new DcsTcpServer {port: 4013, db}
